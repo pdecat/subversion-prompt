@@ -27,6 +27,7 @@
 # Changelog :
 #  2015-01-28: tdb
 #	Support Subversion 1.7+ (single .svn directory—in the root of the working copy)
+#	Ignore externals to speed up things on projects with many and large externals
 #  2008-05-09: v0.4
 #	Option to check distant status
 #	Prefix env var by SVNP 
@@ -69,7 +70,7 @@ __svn_clean ()
 	else
 		pwd | egrep -q $SVNP_HUGE_REPO_EXCLUDE_PATH && HUGE_REPO=" -N "
 	fi
-	STATE=$(LANG='C' svn $HUGE_REPO status -q 2>/dev/null | grep "^[MA]" | wc -l)
+	STATE=$(LANG='C' svn $HUGE_REPO status --ignore-externals -q 2>/dev/null | grep "^[MA]" | wc -l)
 	if [ $STATE != 0 ]; then
 		echo "$2"
 	else
@@ -83,7 +84,7 @@ __svn_remote_clean ()
 	else
 		pwd | egrep -q $SVNP_HUGE_REPO_EXCLUDE_PATH && HUGE_REPO=" -N "
 	fi
-	STATE=$(LANG='C' svn $HUGE_REPO status -u -q 2>/dev/null | egrep  " *\*" | wc -l)
+	STATE=$(LANG='C' svn $HUGE_REPO status --ignore-externals -u -q 2>/dev/null | egrep  " *\*" | wc -l)
 	if [ $STATE != 0 ]; then
 		echo "$2"
 	else
