@@ -25,6 +25,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 # Changelog :
+#  2015-01-28: tdb
+#	Support Subversion 1.7+ (single .svn directory—in the root of the working copy)
 #  2008-05-09: v0.4
 #	Option to check distant status
 #	Prefix env var by SVNP 
@@ -60,7 +62,6 @@ __svn_last_changed ()
 	LANG='C' svn info 2>/dev/null | awk '/Last Changed Rev:/ { print $4;}'
 }
 
-
 __svn_clean ()
 {
 	if [ $SVNP_HAVE_HUGE_REPO ]; then
@@ -92,7 +93,7 @@ __svn_remote_clean ()
 
 __svn_stat ()
 {
-	[ -d .svn ] || return
+	[ -d .svn ] || $(LANG='C' svn info . 2>/dev/null 1>&2) || return
 	REV=$(__svn_rev)
 	if [ $REV ]; then
 		if [ $SVNP_CHECK_DISTANT_REPO ]; then
