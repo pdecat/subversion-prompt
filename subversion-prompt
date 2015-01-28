@@ -28,6 +28,7 @@
 #  2015-01-28: tdb
 #	Support Subversion 1.7+ (single .svn directory—in the root of the working copy)
 #	Ignore externals to speed up things on projects with many and large externals
+#	Display branch information
 #  2008-05-09: v0.4
 #	Option to check distant status
 #	Prefix env var by SVNP 
@@ -63,6 +64,10 @@ __svn_last_changed ()
 	LANG='C' svn info 2>/dev/null | awk '/Last Changed Rev:/ { print $4;}'
 }
 
+__svn_branch ()
+{
+	LANG='C' svn info . 2>/dev/null | grep "Relative URL:" | sed 's/\(^.*\/\(trunk\).*$\|^.*\/branches\/\([^\/]*\).*$\|^.*\/tags\/\([^\/]*\).*$\)/\2\3\4/'
+}
 __svn_clean ()
 {
 	if [ $SVNP_HAVE_HUGE_REPO ]; then
@@ -101,6 +106,7 @@ __svn_stat ()
 			REMOTE_STATUS=$(__svn_remote_clean "" "*")
 		fi
 		LOCAL_STATUS=$(__svn_clean "" "*")
-		echo [$REMOTE_STATUS$REV$LOCAL_STATUS]
+		BRANCH=$(__svn_branch)
+		echo [$BRANCH/$REMOTE_STATUS$REV$LOCAL_STATUS]
 	fi
 }
